@@ -1,0 +1,10 @@
+{% extends "blog/base.html" %}
+    {% block content %}
+        <h1 class="my-3">List des publications</h1>
+        {% for post  in posts %}
+        <h2><a href="/{{post.slug}}/">{{post.title}}</h2></a>
+        <p>{{post.body}}</p>
+        <p>publish date: {{post.publish}}</p>
+        <button class="bt btn-primary"><a href="{% url "post_detail" post.slug %}">Read more...</a></button>
+        {% endfor %}
+    {% endblock content %}
