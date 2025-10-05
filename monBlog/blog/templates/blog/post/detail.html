@@ -1,8 +1,106 @@
 {% extends "blog/base.html" %}
     {% block content %}
-        <h1>Detail</h1>
-        <h2>{{post.title}}</h2>
-        <p>{{post.body}}</p>
-        <p>publish date: {{post.publish}}</p>
-        <p>Author : {{post.author.username}}</p>
-    {% endblock content %} 
+    <style>
+        {% comment %} body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 2rem 0;
+        } {% endcomment %}
+        .article-header {
+            background-color: white;
+            border-radius: 10px 10px 0 0;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .article-header img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+        .article-body {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .article-title {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        .article-meta {
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        .article-content {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        .article-content p {
+            margin-bottom: 1.5rem;
+        }
+        .btn-back {
+            background-color: #2c3e50;
+            color: white;
+            border-radius: 20px;
+            padding: 0.5rem 1.5rem;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+        .btn-back:hover {
+            background-color: #1a252f;
+            color: white;
+        }
+    </style>
+     <article>
+            <div class="article-header">
+                <img src="https://via.placeholder.com/1200x400" alt="Image de l'article" class="img-fluid">
+            </div>
+            <div class="article-body">
+                <h1 class="article-title">{{post.title}}</h1>
+                <div class="article-meta">
+                    Publié le : {{post.publish|date:"d/m/Y"}} • 5 min de lecture • Catégorie : Technologie
+                </div>
+                <div class="article-content">
+                  <p>{{post.body}}</p>
+                </div>
+                 <p>Author : {{post.author.username}}</p>
+                <a href="#" class="btn-back">Retour aux articles</a>
+            </div>
+        </article>
+        {% comment %} section commentaire {% endcomment %}
+        <section class="mb-3">
+             <div class="card bg-light">
+                <h2>
+                    {% with comments.count as total_comments %}
+                    {{total_comments}} comment{{total_comments|pluralize}}
+                    {% endwith %}
+                </h2>
+                <div class="card-body">
+                    <form class="mb-4" action="">
+                        <textarea class="form-control" name="" id="" placeholder="comment"></textarea>
+                    </form>
+                     {% comment %} <div class="d-flex">
+                          <div class="flex-shrink-0"><img src="" alt=""></div>
+                          <div class="ms-3">
+                            <div class="fw-bold">commenter name</div>
+                            <p>comment s</p>
+                          </div>
+                    </div> {% endcomment %}
+                    {% for comment in comments %}
+                    <div class="d-flex mb-3">
+                          {% comment %} <div class="flex-shrink-0"><img src="" alt=""></div> {% endcomment %}
+                          <div class="ms-3">
+                            <div class="fw-bold">{{comment.username}}</div>
+                            <p>{{comment.body}}</p>
+                          </div>
+                    </div>
+                    {% endfor %}
+                </div>
+             </div>
+        </section>
+  {% endblock content %} 

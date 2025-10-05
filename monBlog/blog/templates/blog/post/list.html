@@ -1,10 +1,42 @@
 {% extends "blog/base.html" %}
     {% block content %}
-        <h1 class="my-3">List des publications</h1>
+        {% comment %} <h1 class="my-3">List des publications</h1>
         {% for post  in posts %}
-        <h2><a href="/{{post.slug}}/">{{post.title}}</h2></a>
-        <p>{{post.body}}</p>
+        <h2><a href="/{{post.slug}}/">{{post.title}}</a></h2>
+        <p>{{post.body|truncatewords:3}}</p>
         <p>publish date: {{post.publish}}</p>
         <button class="bt btn-primary"><a href="{% url "post_detail" post.slug %}">Read more...</a></button>
-        {% endfor %}
+        {% endfor %} {% endcomment %}
+         <!-- Header -->
+    <header class="py-5 bg-light">
+        <div class="container text-center">
+            <h1 class="display-4">Bienvenue sur mon blog</h1>
+            <p class="lead">Découvrez mes derniers articles et astuces</p>
+        </div>
+    </header>
+        <!-- Main Content -->
+    <main class="container py-5">
+        <div class="row g-4">
+            <!-- Article 1 -->
+              {% for post  in posts %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card blog-card">
+                    <img src="https://via.placeholder.com/600x400" class="card-img-top" alt="Article 1">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="/{{post.slug}}/">{{post.title}}</a></h5>
+                        <p class="card-text">{{post.body|truncatewords:20}}</p>
+                        <a href="{% url "post_detail" post.slug %}" class="btn btn-read-more">Lire plus</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                        Publié le : {{post.publish|date:"d/m/Y"}} • 5 min de lecture 
+                    </div>
+                </div>
+            </div>
+           {% endfor %}
+
+        </div>
+
+        {% include "blog\layouts\pagination.html" %}
+      
+    </main>
     {% endblock content %}
