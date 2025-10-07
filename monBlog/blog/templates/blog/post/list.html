@@ -12,6 +12,9 @@
         <div class="container text-center">
             <h1 class="display-4">Bienvenue sur mon blog</h1>
             <p class="lead">Découvrez mes derniers articles et astuces</p>
+            {% if category %}
+                <p class="lead">Article dédier à {{category}}</p>
+            {% endif %}
         </div>
     </header>
         <!-- Main Content -->
@@ -36,7 +39,25 @@
 
         </div>
 
-        {% include "blog\layouts\pagination.html" %}
+        {% comment %} section categories {% endcomment %}
+         <div class="card mb-3">
+            <div class="card-header">
+                categories
+           </div>
+           <div class="card-body">
+              <div class="row">
+                  {% for cat  in categories %}
+                     <div class="col-sm-6">
+                       <ul class="list-unstyled mb-0">
+                          <li><a href="{% url "category_post_list" cat.slug %}">{{cat.name}}</a></li>
+                       </ul>
+                     </div>
+                  {% endfor %}
+             </div>
+           </div>
+         </div>
+        {% comment %} {% include "blog\layouts\pagination.html" %} {% endcomment %}
+        {% include "blog\layouts\pagination.html" with page=posts %}
       
     </main>
     {% endblock content %}

@@ -1,8 +1,10 @@
 from django.contrib import admin
-from .models import post, Comment
+from .models import post, Comment, Category
 
 # importer mon model pour que ça s'affiche dans admin de django
 # admin.site.register(post)
+
+admin.site.register(Category)
 
 @admin.register(post) #permet d'ajouter dans le site d'admin de django
 class PostAdmin(admin.ModelAdmin):

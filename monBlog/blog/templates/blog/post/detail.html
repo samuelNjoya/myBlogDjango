@@ -76,14 +76,35 @@
         <section class="mb-3">
              <div class="card bg-light">
                 <h2>
-                    {% with comments.count as total_comments %}
+                    {% comment %} {% with comments.count as total_comments %}
                     {{total_comments}} comment{{total_comments|pluralize}}
-                    {% endwith %}
+                    {% endwith %} {% endcomment %}
+                  {% with comments.count as total_comments %}
+                    {{ total_comments }} comment{% if total_comments > 1 %}s{% endif %}
+                  {% endwith %}
                 </h2>
                 <div class="card-body">
-                    <form class="mb-4" action="">
-                        <textarea class="form-control" name="" id="" placeholder="comment"></textarea>
+                    {% comment %} {% if new_comment %}
+                    <h2>your comment has ben added</h2>
+                    {% else %} {% endcomment %}
+                    <!-- Afficher les messages -->
+                    {% if messages %}
+                        <div class="messages">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <h2>Add new comment</h2>
+                     <form action="" method="post">
+                         {% csrf_token %} 
+                        {{ comment_form.as_p }}
+                        <button class="btn btn-primary" type="submit">Add comment</button>
                     </form>
+                    {% comment %} {% endif %} {% endcomment %}
+                   
                      {% comment %} <div class="d-flex">
                           <div class="flex-shrink-0"><img src="" alt=""></div>
                           <div class="ms-3">
@@ -95,10 +116,12 @@
                     <div class="d-flex mb-3">
                           {% comment %} <div class="flex-shrink-0"><img src="" alt=""></div> {% endcomment %}
                           <div class="ms-3">
-                            <div class="fw-bold">{{comment.username}}</div>
+                            <div class="fw-bold"><span>#{{forloop.counter}}</span>{{comment.username}} <span> at : {{comment.created}}</span></div>
                             <p>{{comment.body}}</p>
                           </div>
                     </div>
+                    {% empty %}
+                     <h2>your d'ont have comment yet</h2>
                     {% endfor %}
                 </div>
              </div>
