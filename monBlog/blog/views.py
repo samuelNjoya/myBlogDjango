@@ -11,7 +11,7 @@ from django.contrib import messages
 #     return render(request, 'blog/post/list.html' ,{'posts':posts}) #ajouter un dictionnaire facultatif , {} apres le name
 
 def post_list(request,category=None):
-    posts = post.objects.all().order_by('-created')  
+    posts = post.published.all().order_by('-created')  #objects a été remplacer par published provenant du model
     categories = Category.objects.all()
     if category:
         category = get_object_or_404(Category, slug=category)

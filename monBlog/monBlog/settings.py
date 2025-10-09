@@ -26,7 +26,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blog', # nom de notre Application 
+    'accounts',
 ]
+
+# URLs de redirection après authentification
+LOGIN_REDIRECT_URL = '/'  # Redirection après connexion réussie
+#LOGOUT_REDIRECT_URL = '/'  # Redirection après déconnexion
+LOGIN_URL = 'login'  # URL de la page de connexion
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

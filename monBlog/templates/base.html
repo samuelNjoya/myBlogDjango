@@ -71,7 +71,8 @@
     </style>
 <body>
       <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+
+    {% comment %} <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
         <div class="container">
             <a class="navbar-brand" href="#">Mon Blog</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -86,7 +87,28 @@
                 </ul>
             </div>
         </div>
+    </nav> {% endcomment %}
+
+
+        <!-- Dans la barre de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="">Mon Blog</a>
+            
+            <div class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <span class="navbar-text me-3">
+                        Bonjour, {{ user.username }}
+                    </span>
+                    <a class="nav-link" href="{% url 'logout' %}">Déconnexion</a>
+                {% else %}
+                    <a class="nav-link" href="{% url 'login' %}">Connexion</a>
+                    <a class="nav-link" href="{% url 'accounts:register' %}">Inscription</a>
+                {% endif %}
+            </div>
+        </div>
     </nav>
+
     {% comment %} <header>
         <h1>my Header</h1>
     </header> {% endcomment %}
