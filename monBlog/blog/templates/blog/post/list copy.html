@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+    {% block content %}
+        {% comment %} <h1 class="my-3">List des publications</h1>
+        {% for post  in posts %}
+        <h2><a href="/{{post.slug}}/">{{post.title}}</a></h2>
+        <p>{{post.body|truncatewords:3}}</p>
+        <p>publish date: {{post.publish}}</p>
+        <button class="bt btn-primary"><a href="{% url "post_detail" post.slug %}">Read more...</a></button>
+        {% endfor %} {% endcomment %}
+         <!-- Header -->
+    <header class="py-5 bg-light">
+        <div class="container text-center">
+            <h1 class="display-4">Bienvenue sur mon blog</h1>
+            <p class="lead">Découvrez mes derniers articles et astuces</p>
+            {% if category %}
+                <p class="lead">Article dédier à {{category}}</p>
+            {% endif %}
+        </div>
+    </header>
+        <!-- Main Content -->
+    <main class="container py-5">
+        <div class="row g-4">
+            <!-- Article 1 -->
+              {% for post  in posts %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card blog-card">
+                    <img src="https://via.placeholder.com/600x400" class="card-img-top" alt="Article 1">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="/{{post.slug}}/">{{post.title}}</a></h5>
+                        <p class="card-text">{{post.body|truncatewords:20}}</p>
+                        <a href="{% url "post_detail" post.slug %}" class="btn btn-read-more">Lire plus</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                        Publié le : {{post.publish|date:"d/m/Y"}} • 5 min de lecture 
+                    </div>
+                </div>
+            </div>
+           {% endfor %}
+
+        </div>
+
+        {% comment %} section categories {% endcomment %}
+         <div class="card mb-3">
+            <div class="card-header">
+                categories
+           </div>
+           <div class="card-body">
+              <div class="row">
+                  {% for cat  in categories %}
+                     <div class="col-sm-6">
+                       <ul class="list-unstyled mb-0">
+                          <li><a href="{% url "category_post_list" cat.slug %}">{{cat.name}}</a></li>
+                       </ul>
+                     </div>
+                  {% endfor %}
+             </div>
+           </div>
+         </div>
+        {% comment %} {% include "blog\layouts\pagination.html" %} {% endcomment %}
+        {% include "blog\layouts\pagination.html" with page=posts %}
+      
+    </main>
+    {% endblock content %}

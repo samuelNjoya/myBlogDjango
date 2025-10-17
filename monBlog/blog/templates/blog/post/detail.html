@@ -69,7 +69,7 @@
                   <p>{{post.body}}</p>
                 </div>
                  <p>Author : {{post.author.username}}</p>
-                <a href="#" class="btn-back">Retour aux articles</a>
+                <a href="{% url 'post_list' %}" class="btn-back">Retour aux articles</a>
             </div>
         </article>
         {% comment %} section commentaire {% endcomment %}
@@ -116,7 +116,7 @@
                     <div class="d-flex mb-3">
                           {% comment %} <div class="flex-shrink-0"><img src="" alt=""></div> {% endcomment %}
                           <div class="ms-3">
-                            <div class="fw-bold"><span>#{{forloop.counter}}</span>{{comment.username}} <span> at : {{comment.created}}</span></div>
+                            <div class="fw-bold"><span>#{{forloop.counter}}</span> {{comment.author.username}} <span> at : {{comment.created}}</span></div>
                             <p>{{comment.body}}</p>
                           </div>
                     </div>

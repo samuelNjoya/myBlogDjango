@@ -91,7 +91,7 @@
 
 
         <!-- Dans la barre de navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    {% comment %} <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="">Mon Blog</a>
             
@@ -107,7 +107,69 @@
                 {% endif %}
             </div>
         </div>
-    </nav>
+    </nav> {% endcomment %}
+    <!-- Dans la barre de navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'post_list' %}">Mon Blog</a>
+        
+        <!-- Bouton toggle pour mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <!-- Barre de recherche -->
+            <form class="d-flex me-3" method="GET" action="{% url 'post_list' %}">
+                <div class="input-group">
+                    <input type="search" 
+                           name="q" 
+                           class="form-control" 
+                           placeholder="Rechercher un article..." 
+                           value="{{ search_query|default:'' }}"
+                           aria-label="Rechercher">
+                    <button class="btn btn-outline-light" type="submit">
+                        🔍
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Menu utilisateur -->
+            <div class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <!-- Menu déroulant pour utilisateur connecté -->
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            👋 {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'post_create' %}">
+                                    ✏️ Nouvel article
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'post_draft_list' %}">
+                                    📝 Mes brouillons
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'logout' %}">
+                                    🚪 Déconnexion
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <!-- Liens pour utilisateur non connecté -->
+                    <a class="nav-link" href="{% url 'login' %}">Connexion</a>
+                    <a class="nav-link" href="{% url 'accounts:register' %}">Inscription</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
 
     {% comment %} <header>
         <h1>my Header</h1>

@@ -1,63 +1,150 @@
 {% extends "base.html" %}
-    {% block content %}
-        {% comment %} <h1 class="my-3">List des publications</h1>
-        {% for post  in posts %}
-        <h2><a href="/{{post.slug}}/">{{post.title}}</a></h2>
-        <p>{{post.body|truncatewords:3}}</p>
-        <p>publish date: {{post.publish}}</p>
-        <button class="bt btn-primary"><a href="{% url "post_detail" post.slug %}">Read more...</a></button>
-        {% endfor %} {% endcomment %}
-         <!-- Header -->
-    <header class="py-5 bg-light">
-        <div class="container text-center">
-            <h1 class="display-4">Bienvenue sur mon blog</h1>
-            <p class="lead">Découvrez mes derniers articles et astuces</p>
-            {% if category %}
-                <p class="lead">Article dédier à {{category}}</p>
+
+{% block content %}
+<!-- Header avec résultats de recherche -->
+<header class="py-5 bg-light">
+    <div class="container text-center">
+        <h1 class="display-4">
+            {% if search_query %}
+                🔍 Résultats pour "{{ search_query }}"
+            {% elif title %}
+                {{ title }}
+            {% else %}
+                Bienvenue sur mon blog
             {% endif %}
+        </h1>
+        
+        <p class="lead">
+            {% if search_query %}
+                {{ posts.paginator.count }} article(s) trouvé(s)
+            {% elif current_category %}
+                Articles dans la catégorie : {{ current_category.name }}
+            {% elif title %}
+                {{ title }}
+            {% else %}
+                Découvrez mes derniers articles et astuces
+            {% endif %}
+        </p>
+        
+        <!-- Bouton Nouvel article (visible seulement si connecté) -->
+        {% if user.is_authenticated and not title %}
+        <div class="mt-3">
+            <a href="{% url 'post_create' %}" class="btn btn-success btn-lg">
+                ✏️ Rédiger un article
+            </a>
         </div>
-    </header>
-        <!-- Main Content -->
-    <main class="container py-5">
-        <div class="row g-4">
-            <!-- Article 1 -->
-              {% for post  in posts %}
-            <div class="col-md-6 col-lg-4">
-                <div class="card blog-card">
-                    <img src="https://via.placeholder.com/600x400" class="card-img-top" alt="Article 1">
-                    <div class="card-body">
-                        <h5 class="card-title"><a href="/{{post.slug}}/">{{post.title}}</a></h5>
-                        <p class="card-text">{{post.body|truncatewords:20}}</p>
-                        <a href="{% url "post_detail" post.slug %}" class="btn btn-read-more">Lire plus</a>
-                    </div>
-                    <div class="card-footer text-muted">
-                        Publié le : {{post.publish|date:"d/m/Y"}} • 5 min de lecture 
+        {% endif %}
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="container py-5">
+    <!-- Message si aucun résultat -->
+    {% if posts.paginator.count == 0 %}
+    <div class="text-center py-5">
+        <h3>📭 Aucun article trouvé</h3>
+        <p class="text-muted">
+            {% if search_query %}
+                Aucun résultat pour "{{ search_query }}". Essayez d'autres termes.
+            {% else %}
+                Aucun article n'est disponible pour le moment.
+            {% endif %}
+        </p>
+        <a href="{% url 'post_list' %}" class="btn btn-primary">
+            Voir tous les articles
+        </a>
+    </div>
+    {% else %}
+    <div class="row g-4">
+        <!-- Articles -->
+        {% for post in posts %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card blog-card h-100">
+                <!-- Image de l'article (placeholder pour l'instant) -->
+                <img src="https://via.placeholder.com/600x400/2c3e50/ffffff?text=Blog" 
+                     class="card-img-top" 
+                     alt="{{ post.title }}">
+                
+                <div class="card-body d-flex flex-column">
+                    <!-- Catégorie -->
+                    {% if post.category %}
+                    <span class="badge bg-primary mb-2 align-self-start">
+                        {{ post.category.name }}
+                    </span>
+                    {% endif %}
+                    
+                    <!-- Titre -->
+                    <h5 class="card-title">
+                        <a href="{{ post.get_absolute_url }}" class="text-decoration-none text-dark">
+                            {{ post.title }}
+                        </a>
+                    </h5>
+                    
+                    <!-- Extrait -->
+                    <p class="card-text flex-grow-1">
+                        {{ post.body|truncatewords:20 }}
+                    </p>
+                    
+                    <!-- Boutons d'action -->
+                    <div class="mt-auto">
+                        <!-- Bouton Lire plus -->
+                        <a href="{{ post.get_absolute_url }}" class="btn btn-read-more">
+                            Lire plus
+                        </a>
+                        
+                        <!-- Bouton Modifier (auteur seulement) -->
+                        {% if user.is_authenticated and user == post.author %}
+                        <a href="{% url 'post_edit' post.slug %}" 
+                           class="btn btn-outline-secondary btn-sm ms-1"
+                           title="Modifier cet article">
+                            ✏️
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
+                
+                <!-- Pied de carte -->
+                <div class="card-footer text-muted">
+                    <small>
+                        📅 {{ post.publish|date:"d/m/Y" }} 
+                        | 👤 {{ post.author.username }}
+                        {% if post.status == 'draft' %}
+                        | <span class="text-warning">Brouillon</span>
+                        {% endif %}
+                    </small>
+                </div>
             </div>
-           {% endfor %}
-
         </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-        {% comment %} section categories {% endcomment %}
-         <div class="card mb-3">
-            <div class="card-header">
-                categories
-           </div>
-           <div class="card-body">
-              <div class="row">
-                  {% for cat  in categories %}
-                     <div class="col-sm-6">
-                       <ul class="list-unstyled mb-0">
-                          <li><a href="{% url "category_post_list" cat.slug %}">{{cat.name}}</a></li>
-                       </ul>
-                     </div>
-                  {% endfor %}
-             </div>
-           </div>
-         </div>
-        {% comment %} {% include "blog\layouts\pagination.html" %} {% endcomment %}
-        {% include "blog\layouts\pagination.html" with page=posts %}
-      
-    </main>
-    {% endblock content %}
+    <!-- Pagination -->
+    {% if posts.paginator.num_pages > 1 %}
+    <div class="mt-5">
+        {% include "blog/layouts/pagination.html" with page=posts %}
+    </div>
+    {% endif %}
+
+    <!-- Section Catégories (seulement sur la page principale) -->
+    {% if not search_query and not title and not current_category %}
+    <div class="card mt-5">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">📂 Catégories</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for cat in categories %}
+                <div class="col-sm-6 mb-2">
+                    <a href="{% url 'category_post_list' cat.slug %}" 
+                       class="text-decoration-none">
+                        📁 {{ cat.name }}
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</main>
+{% endblock %}

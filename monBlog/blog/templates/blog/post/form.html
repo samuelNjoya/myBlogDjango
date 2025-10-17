@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- En-tête -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3">{{ title }}</h1>
+                <a href="{% url 'post_list' %}" class="btn btn-outline-secondary">
+                    ← Retour aux articles
+                </a>
+            </div>
+
+            <!-- Messages Django -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Formulaire -->
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Affichage des erreurs non-field -->
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Champ Titre -->
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">
+                                <strong>Titre *</strong>
+                            </label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.title.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Champ Slug -->
+                        <div class="mb-3">
+                            <label for="{{ form.slug.id_for_label }}" class="form-label">
+                                <strong>Slug *</strong>
+                            </label>
+                            {{ form.slug }}
+                            {% if form.slug.help_text %}
+                                <div class="form-text">{{ form.slug.help_text }}</div>
+                            {% endif %}
+                            {% if form.slug.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.slug.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Champ Catégorie -->
+                        <div class="mb-3">
+                            <label for="{{ form.category.id_for_label }}" class="form-label">
+                                <strong>Catégorie *</strong>
+                            </label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.category.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Champ Contenu -->
+                        <div class="mb-4">
+                            <label for="{{ form.body.id_for_label }}" class="form-label">
+                                <strong>Contenu *</strong>
+                            </label>
+                            {{ form.body }}
+                            {% if form.body.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.body.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Champ Statut -->
+                        <div class="mb-4">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">
+                                <strong>Statut *</strong>
+                            </label>
+                            {{ form.status }}
+                            {% if form.status.help_text %}
+                                <div class="form-text">{{ form.status.help_text }}</div>
+                            {% endif %}
+                            {% if form.status.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.status.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="d-flex gap-2 justify-content-end">
+                            <!-- Bouton Annuler -->
+                            <a href="{% if post %}{{ post.get_absolute_url }}{% else %}{% url 'post_list' %}{% endif %}" 
+                               class="btn btn-outline-secondary">
+                                Annuler
+                            </a>
+                            
+                            <!-- Bouton Sauvegarder Brouillon -->
+                            <button type="submit" name="save_draft" class="btn btn-warning">
+                                💾 Sauvegarder brouillon
+                            </button>
+                            
+                            <!-- Bouton Publier -->
+                            <button type="submit" name="publish" class="btn btn-success">
+                                🚀 Publier l'article
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Aide à la rédaction -->
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">💡 Conseils de rédaction</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled small mb-0">
+                        <li>• Utilisez des titres clairs et descriptifs</li>
+                        <li>• Le slug doit être en minuscules avec des tirets</li>
+                        <li>• Structurez votre contenu avec des paragraphes</li>
+                        <li>• "Brouillon" = visible uniquement par vous</li>
+                        <li>• "Publié" = visible par tous les visiteurs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script pour générer automatiquement le slug -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const titleField = document.getElementById('{{ form.title.id_for_label }}');
+    const slugField = document.getElementById('{{ form.slug.id_for_label }}');
+    let slugChanged = false;
+
+    // Si le slug est modifié manuellement, on ne le change plus automatiquement
+    if (slugField) {
+        slugField.addEventListener('change', function() {
+            slugChanged = true;
+        });
+    }
+
+    if (titleField && slugField) {
+        titleField.addEventListener('input', function() {
+            if (!slugChanged) {
+                const slug = titleField.value
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[^a-z0-9\s-]/g, '')  // Supprime les caractères spéciaux
+                    .replace(/\s+/g, '-')          // Remplace les espaces par des tirets
+                    .replace(/-+/g, '-');          // Supprime les tirets multiples
+                slugField.value = slug;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
